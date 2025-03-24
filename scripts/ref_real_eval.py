@@ -34,7 +34,7 @@ if not args.skip_rendering:
     for scene in scenes:
         sources.append(f"{args.source}/{scene}")
 
-    common_args = " --quiet --eval --skip_train"
+    common_args = " --quiet --eval --skip_train --skip_mesh"
     for scene, source in zip(scenes, sources):
         os.system(f"python render.py --iteration 30000 -s {source} -m {args.output_path}/{scene} {common_args}")
 
