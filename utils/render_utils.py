@@ -210,7 +210,7 @@ def create_videos(base_dir, input_dir, out_name, num_frames=480):
 
   os.makedirs(base_dir, exist_ok=True)
   render_dist_curve_fn = np.log
-  
+
   # Load one example frame to get image shape and depth range.
   depth_file = os.path.join(input_dir, 'vis', f'depth_{idx_to_str(0)}.tiff')
   depth_frame = load_img(depth_file)
@@ -226,11 +226,11 @@ def create_videos(base_dir, input_dir, out_name, num_frames=480):
       'fps': 60,
       'crf': 18,
   }
-  
+
   for k in ['depth', 'normal', 'color']:
     video_file = os.path.join(base_dir, f'{video_prefix}_{k}.mp4')
     input_format = 'gray' if k == 'alpha' else 'rgb'
-    
+
 
     file_ext = 'png' if k in ['color', 'normal'] else 'tiff'
     idx = 0
@@ -274,6 +274,12 @@ def save_img_u8(img, pth):
         (np.clip(np.nan_to_num(img), 0., 1.) * 255.).astype(np.uint8)).save(
             f, 'PNG')
 
+def save_depth_u8(img, pth):
+  """Save a depth image in [0, 1] to disk as a uint8 PNG."""
+  with open(pth, 'wb') as f:
+    min_val, max_val = np.min(img), np.max(img)
+    img_normed = (255 * (img - min_val) / (max_val - min_val)).astype(np.uint8)
+    Image.fromarray(np.nan_to_num(img).astype(np.uint8)).save(f, 'PNG')
 
 def save_img_f32(depthmap, pth):
   """Save an image (probably a depthmap) to disk as a float32 TIFF."""
