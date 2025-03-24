@@ -22,6 +22,7 @@ from PIL import Image
 import mediapy as media
 from matplotlib import cm
 from tqdm import tqdm
+from .image_utils import colormap
 
 import torch
 
@@ -277,8 +278,7 @@ def save_img_u8(img, pth):
 def save_depth_u8(img, pth):
   """Save a depth image in [0, 1] to disk as a uint8 PNG."""
   with open(pth, 'wb') as f:
-    min_val, max_val = np.min(img), np.max(img)
-    img_normed = (255 * (img - min_val) / (max_val - min_val)).astype(np.uint8)
+    img = np.clip(colormap(img, cmap="viridis"), 0, 1) * 255
     Image.fromarray(np.nan_to_num(img).astype(np.uint8)).save(f, 'PNG')
 
 def save_img_f32(depthmap, pth):
