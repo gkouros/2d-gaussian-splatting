@@ -13,3 +13,4 @@ eval
 *.npz
 **/tmp
 logs
+condor
