@@ -18,8 +18,8 @@ parser = ArgumentParser(description="Full evaluation script parameters")
 parser.add_argument("--skip_training", action="store_true")
 parser.add_argument("--skip_rendering", action="store_true")
 parser.add_argument("--skip_metrics", action="store_true")
-parser.add_argument("--output_path", "-m", default="logs/shiny_synthetic")
-parser.add_argument('--source', "-s", default="data/shiny_synthetic")
+parser.add_argument("--output_path", "-m", default="logs/ref_shiny")
+parser.add_argument('--source', "-s", default="data/ref_shiny")
 args, _ = parser.parse_known_args()
 
 if not args.skip_training:
