@@ -108,8 +108,17 @@ def fetchPly(path):
     plydata = PlyData.read(path)
     vertices = plydata['vertex']
     positions = np.vstack([vertices['x'], vertices['y'], vertices['z']]).T
-    colors = np.vstack([vertices['red'], vertices['green'], vertices['blue']]).T / 255.0
-    normals = np.vstack([vertices['nx'], vertices['ny'], vertices['nz']]).T
+    try:
+        colors = np.vstack([vertices['red'], vertices['green'], vertices['blue']]).T / 255.0
+    except ValueError as err:
+        print(f'Load Ply color failed, random init with {err}')
+        colors = np.random.rand(*positions.shape) / 255.0
+    try:
+        normals = np.vstack([vertices['nx'], vertices['ny'], vertices['nz']]).T
+    except ValueError as err:
+        print(f'Load Ply normals failed, random init with {err}')
+        normals = np.random.rand(*positions.shape)
+        normals = normals / np.linalg.norm(normals, axis=-1, keepdims=True)
     return BasicPointCloud(points=positions, colors=colors, normals=normals)
 
 def storePly(path, xyz, rgb):
@@ -242,11 +251,8 @@ def readNerfSyntheticInfo(path, white_background, eval, extension=".png"):
         pcd = BasicPointCloud(points=xyz, colors=SH2RGB(shs), normals=np.zeros((num_pts, 3)))
 
         storePly(ply_path, xyz, SH2RGB(shs) * 255)
-    try:
-        pcd = fetchPly(ply_path)
-    except:
-        pcd = None
 
+    pcd = fetchPly(ply_path)
     scene_info = SceneInfo(point_cloud=pcd,
                            train_cameras=train_cam_infos,
                            test_cameras=test_cam_infos,
